@@ -44,31 +44,32 @@ class SiriWeatherFunctions():
 class weatherPlugin(Plugin):
     localizations = {"weatherForecast": 
                         {"search":{
-                            0:{"de-DE": u"Einen Moment Geduld bitte...", "en-US": u"Checking my sources..."},
-                            1:{"de-DE": u"Ich suche nach der Vorhersage ...", "en-US": u"Please wait while I check that..."},
-                            2:{"de-DE": u"Einen Moment bitte ...", "en-US": u"One moment please..."},
-                            3:{"de-DE": u"Ich suche nach Wetterdaten...", "en-US": u"Trying to get weather data for this location..."},
+                            0:{"de-DE": u"Einen Moment Geduld bitte...", "en-US": u"Checking my sources...", "fr-FR": u"Je vérifie mes sources"},
+                            1:{"de-DE": u"Ich suche nach der Vorhersage ...", "en-US": u"Please wait while I check that...", "fr-FR": u"Veuillez patienter pendant que je vérifie..."},
+                            2:{"de-DE": u"Einen Moment bitte ...", "en-US": u"One moment please...", "fr-FR": u"Un instant s'il vous plaît..."},
+                            3:{"de-DE": u"Ich suche nach Wetterdaten...", "en-US": u"Trying to get weather data for this location...", "fr-FR": u"Obtention de la météo pour cette position..."},
                             }, 
                         "forecast":{
                             "DAILY": {
-                                0:{"de-DE": u"Hier ist die Vorhersage für {0}, {1}", "en-US": u"Here is the forecast for {0}, {1}"},
-                                1:{"de-DE": u"Hier ist die Wetterprognose für {0}, {1}", "en-US": u"This is the forecast for {0}, {1}"},
-                                2:{"de-DE": u"Ich habe folgende Vorhersage für {0}, {1} gefunden", u"en-US": "I found the following forecast for {0}, {1}"},
+                                0:{"de-DE": u"Hier ist die Vorhersage für {0}, {1}", "en-US": u"Here is the forecast for {0}, {1}", "fr-FR": u"Voici la météo pour {0}, {1}"},
+                                1:{"de-DE": u"Hier ist die Wetterprognose für {0}, {1}", "en-US": u"This is the forecast for {0}, {1}", "fr-FR": u"Voici la météo pour {0}, {1}"},
+                                2:{"de-DE": u"Ich habe folgende Vorhersage für {0}, {1} gefunden", u"en-US": "I found the following forecast for {0}, {1}", u"fr-FR": "J'ai trouvé la météo suivante pour {0}, {1}"},
                                 },
                             "HOURLY": {
-                                0:{"de-DE": u"Hier ist die heutige Vorhersage für {0}, {1}", "en-US": u"Here is today's forecast for {0}, {1}"},
-                                1:{"de-DE": u"Hier ist die Wetterprognose von heute für {0}, {1}", "en-US": u"This is today's forecast for {0}, {1}"},
-                                2:{"de-DE": u"Ich habe folgende Tagesprognose für {0}, {1} gefunden", "en-US": u"I found the following hourly forecast for {0}, {1}"},
+                                0:{"de-DE": u"Hier ist die heutige Vorhersage für {0}, {1}", "en-US": u"Here is today's forecast for {0}, {1}", "fr-FR": u"Voici la météo pour aujourd'hui pour {0}, {1}"},
+                                1:{"de-DE": u"Hier ist die Wetterprognose von heute für {0}, {1}", "en-US": u"This is today's forecast for {0}, {1}", "fr-FR": u"Voici la météo pour aujourd'hui pour {0}, {1}"},
+                                2:{"de-DE": u"Ich habe folgende Tagesprognose für {0}, {1} gefunden", "en-US": u"I found the following hourly forecast for {0}, {1}", "fr-FR": u"Voici la météo pour les prochaines heures pour {0}, {1}"},
                                 }
                             },
                         "failure": {
-                                   "de-DE": "Ich konnte leider keine Wettervorhersage finden!", "en-US": "I'm sorry but I could not find the forecast for this location!"
+                                   "de-DE": "Ich konnte leider keine Wettervorhersage finden!", "en-US": "I'm sorry but I could not find the forecast for this location!", "fr-FR": "Je suis désolé, je ne peux trouver la météo pour cette position!"
                                    }
                             }
                         }
         
     @register("de-DE", "(.*Wetter.*)|(.*Vorhersage.*)")     
     @register("en-US", "(.*Weather.*)|(.*forecast.*)")
+    @register("fr-FR", "(.*Météo.*)|(.*temps.*)")
     def weatherForecastLookUp(self, speech, language):
         speech = speech.replace(u".","")
         viewType ="DAILY"
@@ -89,6 +90,14 @@ class weatherPlugin(Plugin):
             speech = speech.replace("aktuell","")
             speech = speech.replace(u"in den nächsten Stunden","")
             speech = speech.replace(u"für heute","")
+        if (speech.count("today") > 0 or speech.count("current") > 0 or speech.count(" for today") > 0) and language=="fr-FR":
+            viewType = "HOURLY"
+            speech = speech.replace("jours prochains","")
+            speech = speech.replace("aujourd'hui","")
+            speech = speech.replace("en ce moment","")
+            speech = speech.replace("actuellement","")
+            speech = speech.replace(" pour aujourd'hui",u" à ")
+            speech = speech.replace(" pour ",u" à ")
         
         if language=="en-US":
             speech = speech.replace(" for "," in ")
