@@ -20,6 +20,7 @@ class whereAmI(Plugin):
     
     @register("de-DE", "(Wo bin ich.*)")    
     @register("en-US", "(Where am I.*)")
+    @register("fr-FR", u"(Où suis.je*)")
     def whereAmI(self, speech, language):
         mapGetLocation = self.getCurrentLocation()
         latitude = mapGetLocation.latitude
@@ -47,8 +48,10 @@ class whereAmI(Plugin):
                 view = AddViews(self.refId, dialogPhase="Completion")
                 if language == "de-DE":
                     the_header="Dein Standort"
-                else:
+                elif language == "en-US":
                     the_header="Your location"
+                elif language == "fr-FR":
+                    the_header="Votre position"
                 Location=SiriLocation(the_header, street, city, stateLong, countryCode, postalCode, latitude, longitude)
                 mapsnippet = SiriMapItemSnippet(items=[SiriMapItem(the_header, Location)])
                 view.views = [AssistantUtteranceView(text=the_header, dialogIdentifier="Map"), mapsnippet]
@@ -56,11 +59,15 @@ class whereAmI(Plugin):
             else:
                 if language=="de-DE":
                     self.say('Die Googlemaps informationen waren ungenügend!','Fehler')
-                else:
+                elif language == "en-US":
                     self.say('The Googlemaps response did not hold the information i need!','Error')
+                elif language == "fr-FR":
+                    self.say(u"La réponse de Googlemaps ne contient l'information dont j'ai besoin!",'Erreur')
         else:
             if language=="de-DE":
                 self.say('Ich konnte keine Verbindung zu Googlemaps aufbauen','Fehler')
-            else:
+            elif language == "en-US":
                 self.say('Could not establish a conenction to Googlemaps','Error');
+            elif language == "fr-FR":
+                self.say(u"Impossible d'établir une connection à Googlemaps",'Erreur');
         self.complete_request()
